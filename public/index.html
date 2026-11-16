@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08090f">
+  <title>PLAYBOX 5 — Your games, your screen</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="tv-mode">
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="PLAYBOX 5 home"><span class="brand-mark">P</span><span>PLAYBOX <b>5</b></span></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-item active" data-view="home">Home</button>
+      <button class="nav-item" data-view="library">Game Library</button>
+      <button class="nav-item" data-view="store">Discover</button>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn" id="pair-open" aria-label="Connect controller" title="Connect phone"><span>⌁</span></button>
+      <button class="icon-btn" id="settings-open" aria-label="Settings" title="Settings">⚙</button>
+      <div class="avatar">P</div>
+      <span class="clock" id="clock">--:--</span>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="view active" id="view-home" aria-label="Home">
+      <div class="hero" id="hero">
+        <div class="hero-shade"></div>
+        <div class="hero-content">
+          <div class="eyebrow"><span class="live-dot"></span> YOUR NEXT ADVENTURE STARTS HERE</div>
+          <div class="hero-kicker">PLAYBOX ORIGINAL</div>
+          <h1>NEON<br><em>BREAKOUT</em></h1>
+          <p>A fast, glowing arcade challenge. Keep the ball alive, break every block, chase your high score.</p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="hero-play"><span>▶</span> Play Game</button>
+            <button class="secondary-btn" id="hero-more">Game Details</button>
+          </div>
+          <div class="hero-meta"><span>ARCADE</span><i></i><span>1 PLAYER</span><i></i><span>PLAY IN BROWSER</span></div>
+        </div>
+        <div class="hero-art" aria-hidden="true"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="neon-grid"></div><div class="art-ball"></div></div>
+        <div class="hero-pagination"><span class="selected"></span><span></span><span></span></div>
+      </div>
+      <div class="section-heading"><div><span class="section-overline">JUMP BACK IN</span><h2>Featured games</h2></div><button class="text-btn" data-goto="library">View library <b>→</b></button></div>
+      <div class="game-row" id="featured-row">
+        <button class="game-card selected" data-game="neon"><div class="cover cover-neon"><span class="cover-label">PLAYBOX ORIGINAL</span><strong>NEON<br>BREAKOUT</strong><span class="cover-symbol">◈</span></div><span class="game-name">Neon Breakout</span><span class="game-sub">Arcade · Browser game</span></button>
+        <button class="game-card" data-game="orbit"><div class="cover cover-orbit"><span class="cover-label">QUICK PLAY</span><strong>ORBIT<br>RUNNER</strong><span class="orbit-planet"></span></div><span class="game-name">Orbit Runner</span><span class="game-sub">Coming soon · Demo planned</span></button>
+        <button class="game-card" data-game="pixel"><div class="cover cover-pixel"><span class="cover-label">RETRO COLLECTION</span><strong>PIXEL<br>QUEST</strong><span class="pixel-face">▣</span></div><span class="game-name">Pixel Quest</span><span class="game-sub">Coming soon · Demo planned</span></button>
+        <button class="game-card" data-game="racer"><div class="cover cover-racer"><span class="cover-label">SPEED SERIES</span><strong>NIGHT<br>RACER</strong><span class="racer-light">╱╱</span></div><span class="game-name">Night Racer</span><span class="game-sub">Coming soon · Demo planned</span></button>
+      </div>
+      <div class="bottom-strip"><div><span class="strip-icon">✦</span><div><b>Made for the big screen</b><small>Use your TV remote, keyboard or paired phone.</small></div></div><span class="connection-state" id="tv-status"><i></i> TV ready</span></div>
+    </section>
+
+    <section class="view" id="view-library">
+      <div class="page-title"><span class="section-overline">YOUR COLLECTION</span><h1>Game Library</h1><p>Games available to play in your browser.</p></div>
+      <div class="library-toolbar"><label class="search-box">⌕ <input id="game-search" type="search" placeholder="Search games..." autocomplete="off"></label><span class="library-count" id="library-count">1 playable game</span></div>
+      <div class="library-grid" id="library-grid"></div>
+    </section>
+
+    <section class="view" id="view-store">
+      <div class="page-title"><span class="section-overline">THE PLAYBOX STORE</span><h1>Discover</h1><p>Explore browser-playable experiences and upcoming additions.</p></div>
+      <div class="store-banner"><div><span class="section-overline">FREE TO PLAY</span><h2>Start playing.<br><em>No downloads.</em></h2><p>Neon Breakout is ready in your browser.</p><button class="primary-btn" id="store-play">Play now <span>→</span></button></div><div class="store-glow">✧</div></div>
+      <div class="section-heading"><div><span class="section-overline">AVAILABLE NOW</span><h2>Browser games</h2></div></div>
+      <div class="library-grid compact-grid" id="store-grid"></div>
+      <p class="legal-note">PLAYBOX 5 only lists games that are actually available in this build. Console titles and emulator support are not implied.</p>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="pair-modal" hidden>
+    <section class="modal pairing-modal" role="dialog" aria-modal="true" aria-labelledby="pair-title">
+      <button class="modal-close" data-close="pair-modal" aria-label="Close">×</button>
+      <span class="section-overline">WIRELESS CONTROLLER</span><h2 id="pair-title">Connect your phone</h2>
+      <p>Make sure your phone and TV are on the same Wi-Fi network. Scan this QR code to open the controller.</p>
+      <div class="qr-wrap" id="qr-wrap"><div class="qr-loading">Generating secure pairing…</div></div>
+      <div class="pair-code-label">OR ENTER THIS CODE</div><div class="pair-code" id="pair-code">------</div>
+      <div class="pair-status" id="pair-status"><i></i> Waiting for phone…</div>
+      <small class="modal-hint">Pairing codes expire after 5 minutes. Keep this page open.</small>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="settings-modal" hidden>
+    <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <button class="modal-close" data-close="settings-modal" aria-label="Close">×</button>
+      <span class="section-overline">PREFERENCES</span><h2 id="settings-title">Settings</h2>
+      <div class="setting-row"><div><b>TV focus outlines</b><small>Make remote selection more visible</small></div><label class="switch"><input type="checkbox" id="focus-toggle" checked><span></span></label></div>
+      <div class="setting-row"><div><b>Reduced motion</b><small>Reduce interface animations</small></div><label class="switch"><input type="checkbox" id="motion-toggle"><span></span></label></div>
+      <div class="setting-row"><div><b>Controller</b><small id="settings-controller">Not connected</small></div><button class="small-btn" id="settings-pair">Pair phone</button></div>
+      <div class="setting-row"><div><b>About PLAYBOX 5</b><small>Web edition · Version 0.2.0</small></div><span class="about-mark">P5</span></div>
+    </section>
+  </div>
+
+  <div class="game-overlay" id="game-overlay" hidden>
+    <div class="game-top"><button class="game-back" id="game-back">← Back to PLAYBOX</button><div><span class="game-live-dot"></span> NEON BREAKOUT</div><div class="score-display">SCORE <b id="score">000000</b></div></div>
+    <div class="game-stage"><canvas id="game-canvas" width="960" height="540" aria-label="Neon Breakout game"></canvas><div class="game-start-card" id="game-start-card"><span class="section-overline">PLAYBOX ORIGINAL</span><h2 id="game-message">Ready to play?</h2><p>Move with ← → or A / D. On a TV remote, use Left / Right and OK. Your phone controller also works when paired.</p><button class="primary-btn" id="game-start">Start game <span>▶</span></button></div></div>
+    <div class="game-help"><span>← → MOVE PADDLE</span><span>OK / SPACE START</span><span>ESC BACK</span></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

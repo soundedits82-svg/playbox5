@@ -216,7 +216,7 @@ function bokeh(dt) { bk.globalCompositeOperation = 'source-over'; bk.fillStyle =
 function boot() { if (!T) return finishBoot(); const on = (id, v) => $(id).classList.toggle('on', v); let t = 0; const at = (s, f) => timers.push(setTimeout(f, (t += s) * 1000 * T));
   on('#logo', true); at(6.6, () => { on('#logo', false); on('#warn', true); }); at(4.2, () => { on('#warn', false); on('#bk', true); bkOn = true; }); at(3, () => { on('#spot', true); on('#bk', false); }); at(2.4, finishBoot); }
 function skipBoot() { timers.forEach(clearTimeout); finishBoot(); }
-function finishBoot() { if (!booting) return; booting = false; bkOn = false; $('#boot').classList.add('off'); $('#home').classList.add('on'); setTimeout(() => toast('Logged in to your PLAYBOX.', 5500), 500); }
+function finishBoot() { if (!booting) return; booting = false; bkOn = false; $('#boot').classList.add('off'); $('#home').classList.add('on'); setTimeout(() => openPanel(), 500); }
 // ---------- main loop ----------
 let lt = performance.now(); (function tick(n) { const dt = Math.min(.05, (n - lt) / 1000); lt = n; pollGamepads(); if (bkOn) bokeh(dt); if (G.on) gameTick(dt); requestAnimationFrame(tick); })(lt);
 const fit = () => { const k = Math.min(innerWidth / 1280, innerHeight / 720); $('#stage').style.transform = `translate(${(innerWidth - 1280 * k) / 2}px,${(innerHeight - 720 * k) / 2}px) scale(${k})`; }; addEventListener('resize', fit); fit();

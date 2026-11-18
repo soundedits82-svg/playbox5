@@ -6,3 +6,4 @@
 - Phone controller: D-pad, 2 analog sticks, face buttons, L1/L2/R1/R2, Options/Create/Home, sensitivity + vibration settings, auto-reconnect, latency display
 - Orb Rush: built-in playable demo (1-4 phones, keyboard, gamepad) with haptic feedback
 - Tests: 13 protocol + 12 browser tests
+\n## TV remote compatibility fix\n- Added Samsung/Tizen legacy key-code mappings for arrows, OK, Back and media keys.\n- Added click/touch activation for TV interface controls as a fallback.\n- The first remote key can dismiss boot animation and still navigate.\n

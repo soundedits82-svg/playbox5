@@ -109,7 +109,7 @@ let tt; function toast(m, ms = 3500) { const t = $('#toast'); t.textContent = m;
 setInterval(() => $('#clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), 1000); $('#clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 // ---------- navigation ----------
 function nav(a) {
-  if (booting) return skipBoot();
+  if (booting) { skipBoot(); if (a === 'back') return; }
   if (G.on) return gameNav(a);
   if (panelOn) { if (a === 'left') setFocus('panel', F.i - 1); else if (a === 'right') setFocus('panel', F.i + 1); else if (a === 'ok') [rumbleAll, closePanel][F.i](); else if (a === 'back' || a === 'home') closePanel(); return; }
   if (a === 'left') setFocus(F.r, F.i - 1); else if (a === 'right') setFocus(F.r, F.i + 1);
@@ -121,12 +121,49 @@ function nav(a) {
     else if (F.i === 2) openPanel(); else if (F.i === 1) toast('Media \u2014 coming soon'); else if (F.i > 2) toast(['Search', 'Settings', 'User profiles'][F.i - 3] + ' \u2014 coming soon'); }
 }
 const launch = g => g.play ? startGame() : toast(g.title + ' \u2014 coming soon');
-const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Enter: 'ok', Escape: 'back', Backspace: 'back', GoBack: 'back', BrowserBack: 'back', Home: 'home', MediaPlayPause: 'play', MediaPlay: 'play', ' ': 'ok' };
-const KC = { 4: 'back', 461: 'back', 10009: 'back', 415: 'play', 19: 'play', 179: 'play' };
-addEventListener('keydown', e => { const a = KEYS[e.key] || KC[e.keyCode]; const w = { w: 'up', s: 'down', a: 'left', d: 'right' }[e.key]; if (w) kbSet(w, 1);
-  if (a) { if (a !== 'ok' || !e.repeat) { e.preventDefault(); kbSet(a, 1); nav(a); } else e.preventDefault(); } });
-addEventListener('keyup', e => { const w = { w: 'up', s: 'down', a: 'left', d: 'right' }[e.key] || KEYS[e.key]; if (w) kbSet(w, 0); });
-addEventListener('click', () => booting && skipBoot());
+// Samsung/Tizen remotes report a mixture of KeyboardEvent.key and legacy keyCode values.
+const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+  Enter: 'ok', Accept: 'ok', Select: 'ok', Escape: 'back', Backspace: 'back',
+  GoBack: 'back', BrowserBack: 'back', Return: 'back', Home: 'home',
+  MediaPlayPause: 'play', MediaPlay: 'play', ' ': 'ok' };
+const KC = { 13: 'ok', 23: 'ok', 27: 'back',  Escape: 'back',
+  37: 'left', 38: 'up', 39: 'right', 40: 'down',
+  4: 'back', 461: 'back', 10009: 'back', 65385: 'back',
+  415: 'play', 19: 'play', 179: 'play' };
+const keyAction = e => KEYS[e.key] || KC[e.keyCode] || KC[e.which];
+addEventListener('keydown', e => {
+  const a = keyAction(e);
+  const w = { w: 'up', s: 'down', a: 'left', d: 'right' }[String(e.key || '').toLowerCase()];
+  if (w) kbSet(w, 1);
+  if (a) {
+    e.preventDefault();
+    if (a !== 'ok' || !e.repeat) { kbSet(a, 1); nav(a); }
+  }
+}, { capture: true });
+addEventListener('keyup', e => {
+  const a = keyAction(e);
+  const w = { w: 'up', s: 'down', a: 'left', d: 'right' }[String(e.key || '').toLowerCase()];
+  if (w) kbSet(w, 0);
+  if (a) kbSet(a, 0);
+}, { capture: true });
+
+// Mouse/touch clicks are also mapped to the same TV navigation actions.
+addEventListener('click', e => {
+  if (booting) { skipBoot(); return; }
+  const id = e.target && e.target.closest ? e.target.closest('#bCtrl,#bSearch,#bSet,#bAv,#tGames,#tMedia,#bPlay,#bMore,#pRumble,#pClose,.tile') : null;
+  if (!id) return;
+  if (id.id === 'bCtrl') { openPanel(); return; }
+  if (id.id === 'pClose') { closePanel(); return; }
+  if (id.id === 'pRumble') { rumbleAll(); return; }
+  if (id.classList.contains('tile')) { const i = tiles.indexOf(id); if (i >= 0) { setFocus('shelf', i); launch(ITEMS[i]); } return; }
+  if (id.id === 'bPlay') { launch(ITEMS[sel]); return; }
+  if (id.id === 'bMore') { toast('Game options — coming soon'); return; }
+  if (id.id === 'tMedia') { setFocus('top', 1); toast('Media — coming soon'); return; }
+  if (id.id === 'tGames') { setFocus('top', 0); setFocus('shelf', last.shelf); return; }
+  if (id.id === 'bSearch') { setFocus('top', 3); toast('Search — coming soon'); return; }
+  if (id.id === 'bSet') { setFocus('top', 4); toast('Settings — coming soon'); return; }
+  if (id.id === 'bAv') { setFocus('top', 5); toast('User profiles — coming soon'); }
+}, true);
 // ---------- pads (phones over WebSocket + local gamepads) ----------
 const pads = {}, pad = s => pads[s] || (pads[s] = { b: {}, l: [0, 0], r: [0, 0] });
 const MAP = { up: 'up', down: 'down', left: 'left', right: 'right', cross: 'ok', circle: 'back', home: 'home', options: 'play' };

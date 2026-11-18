@@ -1,65 +1,35 @@
-# PLAYBOX 5 — Web Edition
+# PLAYBOX 5 (v0.1.0)
 
-A TV-first browser gaming hub. Open the website in a compatible TV browser; no Android app is required for the web edition.
+A console-style TV dashboard with a smartphone that becomes your wireless controller. Zero npm dependencies (Node 22+).
 
-## Requirements
-- Node.js 20+
-- A computer/server reachable by the TV and phone on the same network
-- A modern browser with Canvas and WebSocket support
-
-## Run locally
-```bash
-npm install
-npm test
-npm start
+## Run
 ```
-Open `http://localhost:4173` on the host computer. For a TV/phone on the same Wi-Fi, find the host computer's LAN IP and open `http://YOUR-LAN-IP:4173` on the TV. Do not use `localhost` on the TV: that points to the TV itself.
+npm start            # prints the TV URL, e.g. http://192.168.1.20:8080/tv/
+```
+1. Open the TV URL in the TV's browser (or any desktop browser for testing). `?boot=0` skips the boot sequence; any key skips it too.
+2. On the TV: move up to the top bar, select the controller icon, press OK. A QR code and 6-digit code appear.
+3. Phone on the same Wi-Fi: scan the QR code (or open `http://<tv-ip>:8080/pad/` and type the code). Rotate to landscape.
+4. Navigate the TV with the phone D-pad, **Cross** = OK, **Circle** = Back, **Home** = Home. Select **Orb Rush** and play with the left stick (up to 4 phones + keyboard + USB/Bluetooth gamepads that the browser exposes).
 
-## Phone controller
-Select the controller icon on the TV. The server creates a short-lived six-digit code and QR code. Scan it with the phone camera. The phone browser opens `/controller.html?code=...` and connects to the same server using WebSocket. Both devices must be able to reach the server. For internet hosting, use HTTPS so the controller uses secure WSS.
+Remote keys: arrows, Enter/OK, Back (Esc/Backspace/GoBack), Home, Play/Pause. Set `PLAYBOX_HOST=<ip>` if the QR code shows the wrong address.
 
-## Controls
-- TV remote / keyboard: arrows or WASD to move; Enter/OK to select/start; Escape/Backspace to go back.
-- Neon Breakout: Left/Right or A/D moves the paddle; Space/Enter starts; Escape returns to the dashboard.
-- Phone controller: D-pad and face buttons; touch sticks send normalized axis values.
+## Tests
+```
+npm test                                                      # 13 protocol tests
+PLAYWRIGHT_BROWSERS_PATH=... NODE_PATH=$(npm root -g) npm run test:ui   # 12 browser tests (needs Playwright + Chromium)
+```
+See `docs/ARCHITECTURE.md`, `docs/REFERENCE_ANALYSIS.md`, `TODO.md`, `CHANGELOG.md`, and `reports/`.
 
-## Current working scope
-- TV-oriented responsive dashboard, Home / Library / Discover navigation
-- Search and playable/coming-soon labeling
-- Browser game: Neon Breakout
-- QR pairing endpoint and phone controller WebSocket relay
-- Session expiry and single-phone pairing
+## Deploy to Render (Android-friendly)
 
-## Honest limitations
-- This is a browser website, not a native Android TV application.
-- Only Neon Breakout is playable in this version. Other tiles are clearly marked coming soon.
-- A TV browser must support modern JavaScript, Canvas, WebSocket, and QR camera scanning on the phone.
-- Some TV browsers restrict autoplay, WebSocket behavior, focus APIs, or newer CSS. Test on the actual model.
-- Public hosting, domain setup, production TLS, persistent accounts, emulator cores, and console-game streaming integrations are not included.
-- Do not upload or distribute copyrighted game ROMs, BIOS files, or game assets without authorization.
+This project is a Node.js HTTP + WebSocket server. Deploy it as a **Web Service**, not a static site.
 
-## Deployment
-Deploy the Node application to a Node-compatible host. Set `PORT` if required. Put it behind HTTPS with a reverse proxy/platform TLS. The QR endpoint uses the request host to construct the controller URL, so the public hostname must be the one users open on the TV.
+1. Upload/push the contents of this folder to a GitHub repository.
+2. In Render, choose **New + → Web Service** and connect that repository.
+3. If the repository contains this project at its root, use the included `render.yaml` (or set Runtime `Node`, Build Command `npm install`, Start Command `npm start`). If it is inside a subfolder, set that folder as Render's **Root Directory**.
+4. Deploy. Render supplies `PORT` and `RENDER_EXTERNAL_URL`; the server uses the public HTTPS URL when generating the phone-controller QR code.
+5. Open `https://YOUR-SERVICE.onrender.com/tv/` on the Samsung TV. Open `/pad/` on the Android phone or scan the TV's QR code and enter the 6-digit pairing code.
 
+Health check: `/api/health`. WebSocket endpoint: `/ws` (automatically uses `wss://` on HTTPS pages).
 
-## Cloud deployment (no home PC required)
-
-This repository includes `render.yaml` for a one-service Render deployment.
-The free plan may sleep when idle; the first visit can take a little longer to wake.
-A paid always-on service is needed for consistently instant availability.
-
-1. Put this project in a GitHub repository (the ZIP can be extracted and uploaded using GitHub's website, including from a phone browser).
-2. In Render, choose **New → Blueprint** and connect that GitHub repository.
-3. Render reads `render.yaml`, builds with `npm install`, and starts `npm start`.
-4. Wait for the deployment to finish, then open the generated `https://...onrender.com` address on the Samsung TV.
-5. On the TV, open **Connect Controller**. Scan the QR code using the Android phone camera.
-6. Keep the TV page open while using the phone controller.
-
-The host must support persistent WebSocket connections. Keep this as a single server instance:
-pairing sessions currently live in server memory and are not shared across multiple instances.
-Do not publish the six-digit pairing code or QR screenshot publicly.
-
-### Samsung TV notes
-Use the Samsung Internet / TV web browser available on the television and enter the hosted HTTPS address.
-Remote key mappings and browser feature support vary by exact TV model and firmware.
-If the browser cannot open the controller QR destination, type the short pairing URL shown on the phone/TV manually.
+Note: Render's free service may spin down after inactivity, so the first visit after a while can take some time to start. Keep the TV and phone connected to the same deployed service URL.

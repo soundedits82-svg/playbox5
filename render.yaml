@@ -1,11 +1,11 @@
 services:
   - type: web
-    name: playbox5-web
+    name: playbox5
     runtime: node
     plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: NODE_VERSION
+        value: 22.16.0

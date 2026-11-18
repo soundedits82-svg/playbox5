@@ -1,18 +1,2 @@
-{
-  "name": "playbox-5-web",
-  "version": "0.2.0",
-  "private": true,
-  "description": "A TV-first browser gaming hub with phone controller pairing.",
-  "type": "module",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "test": "node --test"
-  },
-  "engines": { "node": ">=20" },
-  "dependencies": {
-    "express": "^4.21.2",
-    "qrcode": "^1.5.4",
-    "ws": "^8.18.0"
-  }
-}
+{ "name": "playbox5", "version": "0.1.0", "private": true, "description": "PLAYBOX 5 - TV gaming dashboard with phone-as-controller",
+  "scripts": { "start": "node server/server.js", "test": "node --test test/e2e.test.js", "test:ui": "node test/ui.js" }, "engines": { "node": ">=22" } }

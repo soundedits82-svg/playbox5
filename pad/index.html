@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>PLAYBOX 5 Controller</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+html,body{height:100%;background:#05060d;color:#fff;overflow:hidden;touch-action:none;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+:root{--u:min(1vh,.55vw)}
+#form,#pad,#rot,#set{position:absolute;inset:0}
+#form{display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px}
+#form h1{font-size:26px;font-weight:600;letter-spacing:.1em}#form p{color:rgba(255,255,255,.6);max-width:320px;font-size:15px}
+#codeIn{width:240px;padding:14px;font-size:34px;letter-spacing:.3em;text-align:center;border-radius:14px;border:2px solid #2a2f4a;background:#0d1020;color:#fff;touch-action:auto;user-select:text;-webkit-user-select:text}
+.bt{padding:14px 34px;border-radius:26px;background:#2f7bff;font-size:18px;font-weight:600;border:0;color:#fff}#err{color:#ff7b8b;min-height:20px;font-size:15px}
+#pad{display:none}
+.b{position:absolute;display:grid;place-items:center;background:#171a2c;border:2px solid #2b3050;color:#dfe4ff;font-weight:700;transition:background .05s}
+.b.on,.knob.on{background:#2f7bff;border-color:#8db5ff}
+.sh{width:calc(var(--u)*17);height:calc(var(--u)*9);border-radius:calc(var(--u)*3);font-size:calc(var(--u)*3.6)}
+.fb{width:calc(var(--u)*12);height:calc(var(--u)*12);border-radius:50%;font-size:calc(var(--u)*6)}
+.dp{width:calc(var(--u)*11);height:calc(var(--u)*11);border-radius:calc(var(--u)*2);font-size:calc(var(--u)*4)}
+.pill{width:calc(var(--u)*13);height:calc(var(--u)*6);border-radius:calc(var(--u)*3);font-size:calc(var(--u)*2.8)}
+.ring{position:absolute;width:calc(var(--u)*38);height:calc(var(--u)*38);border-radius:50%;background:radial-gradient(#101328,#0a0c1a);border:2px solid #2b3050}
+.knob{position:absolute;left:50%;top:50%;width:calc(var(--u)*17);height:calc(var(--u)*17);margin:calc(var(--u)*-8.5) 0 0 calc(var(--u)*-8.5);border-radius:50%;background:#252a47;border:2px solid #4a5384;pointer-events:none}
+#hm{left:50%;bottom:4%;margin-left:calc(var(--u)*-4);width:calc(var(--u)*8);height:calc(var(--u)*8);border-radius:50%;font-size:calc(var(--u)*3)}
+#chip{position:absolute;left:50%;top:3%;transform:translateX(-50%);font-size:calc(var(--u)*2.8);color:rgba(255,255,255,.6);display:flex;gap:10px;align-items:center}
+#dot{width:9px;height:9px;border-radius:50%;background:#3ddc84}#dot.bad{background:#ff5b6b}
+#gear{position:absolute;left:50%;top:22%;transform:translateX(-50%);font-size:calc(var(--u)*5);color:rgba(255,255,255,.55);padding:8px}
+#banner{position:absolute;left:0;right:0;top:0;padding:6px;text-align:center;background:#8a2433;font-size:14px;display:none;z-index:3}
+#rot{display:none;background:#05060d;z-index:5;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:20px;text-align:center}
+@media (orientation:portrait){body.run #rot{display:flex}}
+#set{display:none;background:rgba(5,6,13,.96);z-index:4;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:16px;touch-action:auto}
+#set label{display:flex;gap:12px;align-items:center}#set small{color:rgba(255,255,255,.5)}
+</style></head><body>
+<div id="banner"></div>
+<div id="form"><h1>PLAYBOX 5</h1><p>Enter the 6-digit code shown on your TV, or scan the QR code on the TV screen.</p>
+ <input id="codeIn" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="off"><div id="err"></div><button class="bt" id="go">Connect</button></div>
+<div id="pad">
+ <div class="b sh" data-k="l2" style="left:3%;top:3%">L2</div><div class="b sh" data-k="l1" style="left:calc(3% + var(--u)*19);top:3%">L1</div>
+ <div class="b sh" data-k="r2" style="right:3%;top:3%">R2</div><div class="b sh" data-k="r1" style="right:calc(3% + var(--u)*19);top:3%">R1</div>
+ <div id="chip"><i id="dot" class="bad"></i><span id="info">connecting…</span></div><div id="gear">⚙</div>
+ <div class="b pill" data-k="create" style="left:calc(50% - var(--u)*15);top:13%">CREATE</div><div class="b pill" data-k="options" style="left:calc(50% + var(--u)*2);top:13%">OPTIONS</div>
+ <div class="b dp" data-k="up" style="left:calc(4% + var(--u)*11);top:24%">▲</div><div class="b dp" data-k="left" style="left:4%;top:calc(24% + var(--u)*11)">◀</div>
+ <div class="b dp" data-k="right" style="left:calc(4% + var(--u)*22);top:calc(24% + var(--u)*11)">▶</div><div class="b dp" data-k="down" style="left:calc(4% + var(--u)*11);top:calc(24% + var(--u)*22)">▼</div>
+ <div class="b fb" data-k="triangle" style="right:calc(4% + var(--u)*12);top:24%">△</div><div class="b fb" data-k="square" style="right:calc(4% + var(--u)*24);top:calc(24% + var(--u)*12)">□</div>
+ <div class="b fb" data-k="circle" style="right:4%;top:calc(24% + var(--u)*12)">○</div><div class="b fb" data-k="cross" style="right:calc(4% + var(--u)*12);top:calc(24% + var(--u)*24)">✕</div>
+ <div class="ring" data-s="l" style="left:calc(4% + var(--u)*38);bottom:5%"><i class="knob"></i></div><div class="ring" data-s="r" style="right:calc(4% + var(--u)*38);bottom:5%"><i class="knob"></i></div>
+ <div class="b" id="hm" data-k="home">PB</div>
+</div>
+<div id="rot"><div style="font-size:54px">⟳</div>Rotate your phone to landscape</div>
+<div id="set"><label>Stick sensitivity <input type="range" id="sens" min="0.5" max="1.5" step="0.05"></label>
+ <label><input type="checkbox" id="hap"> Vibration feedback</label><small id="hapNote"></small><small>Custom button layouts — coming soon</small>
+ <button class="bt" id="close">Close</button><button class="bt" id="leave" style="background:#3a3f5c">Disconnect</button></div>
+<script>
+(() => {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const Q = new URLSearchParams(location.search); let code = Q.get('c') || '', token = localStorage.pbToken, ws, retry = 0, joined = false, wantOpen = true, slot = 0;
+const cfg = Object.assign({ sens: 1, hap: 1 }, JSON.parse(localStorage.pbCfg || '{}')), save = () => localStorage.pbCfg = JSON.stringify(cfg);
+const name = /iPhone|iPad/.test(navigator.userAgent) ? 'iPhone' : /Android/.test(navigator.userAgent) ? 'Android phone' : 'Phone';
+const send = o => ws && ws.readyState === 1 && ws.send(JSON.stringify(o));
+const show = id => { ['#form', '#pad'].forEach(s => $(s).style.display = 'none'); $(id).style.display = id === '#pad' ? 'block' : 'flex'; document.body.classList.toggle('run', id === '#pad'); };
+const banner = m => { $('#banner').style.display = m ? 'block' : 'none'; $('#banner').textContent = m || ''; };
+function connect() {
+  ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+  ws.onopen = () => { retry = 0; banner(); send(joined && token ? { t: 'resume', token } : code ? { t: 'join', code, name } : token ? { t: 'resume', token } : { t: 'x' }); if (!code && !token) show('#form'); };
+  ws.onclose = () => { $('#dot').className = 'bad'; if (!wantOpen) return; if (joined) banner('Connection lost \u2014 reconnecting\u2026'); setTimeout(connect, Math.min(3000, 400 * ++retry)); };
+  ws.onmessage = e => { const m = JSON.parse(e.data);
+    if (m.t === 'joined') { joined = true; token = m.token; slot = m.slot; localStorage.pbToken = token; code = ''; history.replaceState(null, '', location.pathname); show('#pad'); setInfo(m.tv); keepAwake(); }
+    else if (m.t === 'err') { if (m.code === 'bad_token') { token = null; delete localStorage.pbToken; joined = false; show('#form'); } else { joined = false; show('#form'); $('#err').textContent = { bad_code: 'That code is not valid. Check the TV screen.', rate_limited: 'Too many attempts. Wait a minute.', full: 'This TV already has 4 controllers.', kicked: 'The TV disconnected this controller.' }[m.code] || 'Error: ' + m.code; if (m.code === 'kicked') { wantOpen = false; delete localStorage.pbToken; } } }
+    else if (m.t === 'tv') { setInfo(m.on); banner(m.on ? '' : 'TV is offline \u2014 waiting\u2026'); }
+    else if (m.t === 'pong') { rtt = Math.round(performance.now() - m.ts); setInfo(true); }
+    else if (m.t === 'rumble' && cfg.hap && navigator.vibrate) navigator.vibrate(m.ms); };
+}
+let rtt = 0; const setInfo = on => { $('#dot').className = on ? '' : 'bad'; $('#info').textContent = `Player ${slot} \u00b7 ${on ? (rtt ? rtt + ' ms' : 'connected') : 'TV offline'}`; };
+setInterval(() => send({ t: 'ping', ts: performance.now() }), 2000);
+const keepAwake = () => navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && joined) keepAwake(); });
+// buttons
+const tick = () => cfg.hap && navigator.vibrate && navigator.vibrate(8);
+$$('[data-k]').forEach(el => { const k = el.dataset.k, set = d => { el.classList.toggle('on', !!d); send({ t: 'b', k, d }); };
+  el.addEventListener('pointerdown', e => { e.preventDefault(); el.setPointerCapture(e.pointerId); set(1); tick(); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => el.addEventListener(ev, () => el.classList.contains('on') && set(0))); });
+// analog sticks (multi-touch safe via pointer capture), sent at most once per frame
+const sticks = {}; $$('[data-s]').forEach(ring => { const k = ring.dataset.s, knob = ring.firstElementChild, st = sticks[k] = { x: 0, y: 0, sx: 0, sy: 0, id: null };
+  const move = e => { const r = ring.getBoundingClientRect(), R = r.width / 2 - knob.offsetWidth / 4; let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const m = Math.hypot(dx, dy); if (m > R) { dx *= R / m; dy *= R / m; }
+    knob.style.transform = `translate(${dx}px,${dy}px)`; st.x = Math.max(-1, Math.min(1, dx / R * cfg.sens)); st.y = Math.max(-1, Math.min(1, dy / R * cfg.sens)); };
+  ring.addEventListener('pointerdown', e => { e.preventDefault(); ring.setPointerCapture(e.pointerId); st.id = e.pointerId; knob.classList.add('on'); move(e); });
+  ring.addEventListener('pointermove', e => e.pointerId === st.id && move(e));
+  ['pointerup', 'pointercancel'].forEach(ev => ring.addEventListener(ev, e => { if (e.pointerId !== st.id) return; st.id = null; st.x = st.y = 0; knob.style.transform = ''; knob.classList.remove('on'); })); });
+(function loop() { for (const k in sticks) { const s = sticks[k], x = +s.x.toFixed(2), y = +s.y.toFixed(2); if (x !== s.sx || y !== s.sy) { s.sx = x; s.sy = y; send({ t: 's', k, x, y }); } } requestAnimationFrame(loop); })();
+// forms and settings
+$('#codeIn').value = code; $('#go').onclick = () => { code = $('#codeIn').value.replace(/\D/g, ''); $('#err').textContent = ''; if (code.length !== 6) return $('#err').textContent = 'Enter the 6-digit code.'; if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); joined = false; if (ws.readyState === 1) send({ t: 'join', code, name }); else connect(); };
+$('#gear').onclick = () => $('#set').style.display = 'flex'; $('#close').onclick = () => $('#set').style.display = 'none';
+$('#sens').value = cfg.sens; $('#sens').oninput = e => { cfg.sens = +e.target.value; save(); }; $('#hap').checked = !!cfg.hap; $('#hap').onchange = e => { cfg.hap = e.target.checked ? 1 : 0; save(); };
+$('#hapNote').textContent = navigator.vibrate ? '' : 'This browser does not support vibration (iPhone Safari does not).';
+$('#leave').onclick = () => { wantOpen = false; joined = false; delete localStorage.pbToken; token = null; ws.close(); $('#set').style.display = 'none'; show('#form'); };
+if (code || token) show('#pad'); else show('#form'); connect();
+window.__pad = { drop: () => ws.close(), state: () => ({ joined, slot, token }) };
+})();
+</script></body></html>

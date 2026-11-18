@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>PLAYBOX 5</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;color:#fff;cursor:none;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;background:#04050c;overflow:hidden}
+.L{position:absolute;inset:0}.st{position:absolute;inset:0;opacity:0;transition:opacity .8s}.st.on{opacity:1}
+#boot{background:#000;z-index:5;transition:opacity .9s}#boot.off{opacity:0;pointer-events:none}
+#logo{display:flex;align-items:center;justify-content:center;gap:18px;font-size:42px;font-weight:300;letter-spacing:.38em}
+#logo b{font-weight:600;border:3px solid #cfd3da;border-radius:10px;padding:0 14px 0 20px;letter-spacing:0;font-size:38px}
+#warn{background:radial-gradient(circle at 50% 50%,#0a1420,#000 70%);display:flex;align-items:center;justify-content:center}
+#warn p{width:760px;font-size:12.5px;letter-spacing:.06em;line-height:1.6;color:rgba(255,255,255,.72);text-transform:uppercase}
+#spot{background:radial-gradient(ellipse 55% 62% at 33% 0,rgba(255,236,214,.6),rgba(130,105,95,.14) 55%,transparent 74%),radial-gradient(ellipse 45% 10% at 55% 96%,rgba(255,240,220,.16),transparent 70%),#08080b}
+#bk{background:radial-gradient(circle at 50% 50%,#0b1a27,#020509 72%)}
+#home{opacity:0;transition:opacity 1s}#home.on{opacity:1}
+.art{position:absolute;inset:0;opacity:0;transition:opacity .45s}.art.on{opacity:1}
+#vig{background:linear-gradient(90deg,#04050c 0,rgba(4,5,12,.9) 22%,rgba(4,5,12,.2) 58%,transparent),linear-gradient(0deg,rgba(4,5,12,.7),transparent 35%),linear-gradient(180deg,rgba(4,5,12,.75),transparent 30%)}
+#tabs{position:absolute;left:62px;top:28px;display:flex;gap:54px;font-size:22px}
+.tab{padding:2px 0;color:rgba(255,255,255,.5)}.tab.cur{color:#fff;font-weight:700}
+.ib{position:absolute;top:22px;width:40px;height:40px;margin-left:-20px;border-radius:50%;display:grid;place-items:center;transition:transform .15s,background .15s}
+.ib svg{width:23px;height:23px}.ib .av{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8fa4ff,#3b2f8f);display:block}
+#tr{transition:opacity .35s}#tr.hide{opacity:0}#clock{position:absolute;right:58px;top:28px;font-size:20px;color:rgba(255,255,255,.92)}
+.badge{position:absolute;right:-2px;top:-2px;min-width:16px;height:16px;border-radius:8px;background:#2f7bff;font-size:11px;line-height:16px;text-align:center;display:none}
+.f{background:rgba(255,255,255,.2)}.tab.f{background:rgba(255,255,255,.16);border-radius:20px;padding:2px 14px;margin:0 -14px}
+#toast{position:absolute;left:824px;top:20px;width:434px;height:75px;border-radius:8px;background:rgba(22,24,40,.86);backdrop-filter:blur(8px);padding:0 16px;display:flex;align-items:center;font-size:19px;color:rgba(255,255,255,.78);opacity:0;transform:translateY(-8px);transition:.35s;z-index:3}
+#toast.on{opacity:1;transform:none}
+#shelf{position:absolute;left:34px;top:80px;display:flex;align-items:flex-start}
+.tile{width:70px;height:70px;margin:4px 7px 0 0;border-radius:9px;flex:none;display:grid;place-items:center;font-weight:800;font-size:20px;color:rgba(255,255,255,.92);background:linear-gradient(135deg,hsl(var(--h) 65% 38%),hsl(calc(var(--h) + 45) 70% 16%));transition:width .22s,height .22s,margin .22s,border-radius .22s,box-shadow .2s,font-size .2s}
+.tile.sys{background:rgba(255,255,255,.06)}.tile svg{width:46%;height:46%;opacity:.9}
+.tile.sel{width:118px;height:118px;margin-top:0;border-radius:13px;font-size:34px;box-shadow:0 0 0 1.5px rgba(255,255,255,.3)}
+.tile.sel.f{box-shadow:0 0 0 2px #fff,0 0 0 5px rgba(0,0,0,.4)}
+#selT{position:absolute;top:165px;font-size:18px;color:rgba(255,255,255,.92);white-space:nowrap;transition:left .22s}
+#hero{position:absolute;left:115px;bottom:116px;width:620px;display:flex;flex-direction:column}
+#h1{font-size:54px;font-weight:800;line-height:.95;text-transform:uppercase;letter-spacing:.01em;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+#tag{margin-top:22px;font-size:18px;color:rgba(255,255,255,.88)}#st{margin-top:6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+#btns{display:flex;gap:11px;margin-top:26px}
+.pb{height:47px;border-radius:24px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;transition:transform .15s,background .15s}
+#bPlay{width:222px}#bPlay.dis{color:rgba(255,255,255,.55);font-weight:500}#bMore{width:48px;font-size:22px;letter-spacing:1px}
+.pb.f{background:#fff;color:#0b0c14;transform:scale(1.04)}.ib.f{transform:scale(1.12)}
+#panel{display:none;background:rgba(2,3,8,.82);backdrop-filter:blur(10px);z-index:4;align-items:center;justify-content:center}
+#panel.on{display:flex}.card{width:820px;padding:34px 40px;border-radius:18px;background:#10121d;box-shadow:0 20px 80px #000}
+.card h2{font-size:30px;font-weight:600;margin-bottom:22px}.rw{display:flex;gap:34px}
+#qr{width:230px;height:230px;border-radius:10px;overflow:hidden;background:#fff;flex:none}#qr svg{width:100%;height:100%}
+.card ol{padding-left:20px;line-height:1.75;font-size:18px;color:rgba(255,255,255,.8)}.card b{color:#fff;font-weight:600;word-break:break-all}
+#code{margin-top:14px;font-size:50px;font-weight:700;letter-spacing:.12em}
+#slots{list-style:none;margin:20px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:17px}
+#slots li{padding:10px 14px;border-radius:8px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5)}#slots li.on{color:#fff;background:rgba(47,123,255,.22)}
+.card .bs{display:flex;gap:12px}.card .pb{padding:0 28px}
+#game{display:none;z-index:6;background:#05060d}
+</style></head><body>
+<div id="stage">
+ <div id="home" class="L">
+  <div id="arts"></div><div id="vig" class="L"></div>
+  <div id="tabs"><div class="tab cur" id="tGames">Games</div><div class="tab" id="tMedia">Media</div></div>
+  <div id="tr">
+   <div class="ib" id="bCtrl" style="left:871px"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 7h11a4.5 4.5 0 014.4 5.4l-.9 4.3a2.6 2.6 0 01-4.4 1.3L14.8 16H9.2l-1.8 2a2.6 2.6 0 01-4.4-1.3l-.9-4.3A4.5 4.5 0 016.5 7z"/></svg><i class="badge" id="badge"></i></div>
+   <div class="ib" id="bSearch" style="left:941px"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></div>
+   <div class="ib" id="bSet" style="left:1011px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="3.6" stroke-dasharray="3.1 3.1"/><circle cx="12" cy="12" r="5.6" fill="currentColor"/><circle cx="12" cy="12" r="2.3" fill="#05060d"/></svg></div>
+   <div class="ib" id="bAv" style="left:1080px"><i class="av"></i></div>
+   <div id="clock"></div></div>
+  <div id="toast"></div><div id="shelf"></div><div id="selT"></div>
+  <div id="hero"><div id="h1"></div><div id="tag"></div><div id="st"></div>
+   <div id="btns"><div class="pb" id="bPlay">Play</div><div class="pb" id="bMore">&middot;&middot;&middot;</div></div></div>
+ </div>
+ <div id="panel" class="L"><div class="card"><h2>Connect a controller</h2>
+  <div class="rw"><div id="qr"></div><div><ol><li>Join the same Wi-Fi network as this TV</li><li>Scan the QR code with your phone camera</li><li>Or open <b id="url"></b> and type the code</li></ol><div id="code">&ndash;&ndash;&ndash; &ndash;&ndash;&ndash;</div></div></div>
+  <ul id="slots"></ul><div class="bs"><div class="pb" id="pRumble">Test vibration</div><div class="pb" id="pClose">Close</div></div></div></div>
+ <canvas id="game" class="L" width="1280" height="720"></canvas>
+ <div id="boot" class="L">
+  <div id="logo" class="st"><span>PLAY</span>BOX<b>5</b></div>
+  <div id="warn" class="st"><p>Photosensitive epilepsy: if you or a family member has a history of epilepsy or seizures, consult a doctor before playing. Certain visual patterns may trigger seizures. Read the instruction manual carefully before use.</p></div>
+  <canvas id="bk" class="st" width="1280" height="720"></canvas><div id="spot" class="st"></div>
+ </div>
+</div>
+<script>
+(() => {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)], clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const Q = new URLSearchParams(location.search), T = Q.get('boot') === '0' ? 0 : Q.get('boot') === 'fast' ? 0.1 : 1;
+const BAG = '<svg viewBox="0 0 24 24" fill="#5aa9ff"><path d="M5 8h14l-1 12H6zM9 8a3 3 0 016 0" stroke="#5aa9ff" stroke-width="2" fill="none"/><path d="M5 8h14l-1 12H6z"/></svg>';
+const GRID = '<svg viewBox="0 0 24 24" fill="#e6e8ef"><path d="M3 4h3v3H3zM8 4h3v3H8zM13 4h3v3h-3zM3 9h3v3H3zM8 9h3v3H8zM13 9h3v3h-3zM3 14h3v3H3z"/><path d="M14 13h6a2 2 0 012 2v3a2 2 0 01-2 2h-1.5l-1-1h-1l-1 1H14a2 2 0 01-2-2v-3a2 2 0 012-2z"/></svg>';
+const ITEMS = [
+ { id: 'store', title: 'PLAYBOX Store', tag: 'Free, open-source and official-partner games.', h: 215, sys: BAG },
+ { id: 'orb', title: 'Orb Rush', tag: 'Collect orbs before time runs out. Up to 4 players.', h: 195, play: 1, plat: 'Built-in demo' },
+ { id: 'import', title: 'Import Your Games', tag: 'Bring games you legally own.', h: 275 },
+ { id: 'retro', title: 'Retro Classics', tag: 'Emulator modules for retro consoles.', h: 25 },
+ { id: 'open', title: 'Open-Source Picks', tag: 'Freely licensed games, one click away.', h: 140 },
+ { id: 'indie', title: 'Indie Showcase', tag: 'Featured indie games from official sources.', h: 320 },
+ { id: 'remote', title: 'Remote Play', tag: 'Stream from your own console where supported.', h: 225 },
+ { id: 'lib', title: 'Game Library', tag: 'Every game you own, in one place.', h: 230, sys: GRID }];
+const ini = t => t.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const art = g => { let s = g.h * 9301 + 49297; const R = () => (s = (s * 9301 + 49297) % 233280) / 233280; let p = '';
+  for (let i = 0; i < 16; i++) { const x = 600 + R() * 640, y = 30 + R() * 640, r = 50 + R() * 170, a = R() * 6.28;
+    p += `<polygon points="${[0, 1, 2].map(k => (x + Math.cos(a + k * 2.1) * r).toFixed(0) + ',' + (y + Math.sin(a + k * 2.1) * r).toFixed(0)).join(' ')}" fill="hsl(${g.h + R() * 50 - 25} 60% ${14 + R() * 22}%)" opacity="${(.15 + R() * .35).toFixed(2)}"/>`; }
+  return `<svg viewBox="0 0 1280 720" width="1280" height="720"><defs><radialGradient id="a"><stop offset="0" stop-color="hsl(${g.h} 85% 52%)" stop-opacity=".55"/><stop offset="1" stop-color="hsl(${g.h} 80% 30%)" stop-opacity="0"/></radialGradient></defs><rect width="1280" height="720" fill="#080913"/><circle cx="880" cy="320" r="360" fill="url(#a)"/>${p}<circle cx="880" cy="320" r="170" fill="none" stroke="hsl(${g.h} 90% 70%)" stroke-opacity=".35" stroke-width="3"/></svg>`; };
+// ---------- state ----------
+const shelf = $('#shelf'), tiles = ITEMS.map((g, i) => { const d = document.createElement('div'); d.className = 'tile' + (g.sys ? ' sys' : ''); d.style.setProperty('--h', g.h); d.innerHTML = g.sys || `<span>${ini(g.title)}</span>`; shelf.appendChild(d); return d; });
+const topEls = ['#tGames', '#tMedia', '#bCtrl', '#bSearch', '#bSet', '#bAv'].map($), heroEls = [$('#bPlay'), $('#bMore')], panelEls = [$('#pRumble'), $('#pClose')];
+const F = { r: 'shelf', i: 1 }, last = { top: 0, shelf: 1, hero: 0, panel: 0 }; let sel = 1, panelOn = false, booting = true, artEl = null;
+const list = r => r === 'top' ? topEls : r === 'hero' ? heroEls : r === 'panel' ? panelEls : tiles;
+function setFocus(r, i) { F.r = r; F.i = clamp(i, 0, list(r).length - 1); last[r] = F.i; $$('.f').forEach(e => e.classList.remove('f')); list(r)[F.i].classList.add('f'); if (r === 'shelf') select(F.i); }
+function select(i) { sel = i; const g = ITEMS[i]; tiles.forEach((t, k) => t.classList.toggle('sel', k === i));
+  $('#selT').textContent = g.title; $('#selT').style.left = (34 + 77 * i + 118 + 8) + 'px';
+  $('#h1').textContent = g.title; $('#tag').textContent = g.tag; $('#st').textContent = g.play ? 'Playable now \u00b7 ' + g.plat : 'Coming soon';
+  const b = $('#bPlay'); b.textContent = g.play ? 'Play' : 'Coming soon'; b.classList.toggle('dis', !g.play);
+  const a = document.createElement('div'); a.className = 'art'; a.innerHTML = art(g); $('#arts').appendChild(a); requestAnimationFrame(() => a.classList.add('on'));
+  if (artEl) { const o = artEl; o.classList.remove('on'); setTimeout(() => o.remove(), 500); } artEl = a; }
+let tt; function toast(m, ms = 3500) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); $('#tr').classList.add('hide'); clearTimeout(tt); tt = setTimeout(() => { t.classList.remove('on'); $('#tr').classList.remove('hide'); }, ms); }
+setInterval(() => $('#clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), 1000); $('#clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+// ---------- navigation ----------
+function nav(a) {
+  if (booting) return skipBoot();
+  if (G.on) return gameNav(a);
+  if (panelOn) { if (a === 'left') setFocus('panel', F.i - 1); else if (a === 'right') setFocus('panel', F.i + 1); else if (a === 'ok') [rumbleAll, closePanel][F.i](); else if (a === 'back' || a === 'home') closePanel(); return; }
+  if (a === 'left') setFocus(F.r, F.i - 1); else if (a === 'right') setFocus(F.r, F.i + 1);
+  else if (a === 'down') { if (F.r === 'top') setFocus('shelf', last.shelf); else if (F.r === 'shelf') setFocus('hero', last.hero); }
+  else if (a === 'up') { if (F.r === 'hero') setFocus('shelf', last.shelf); else if (F.r === 'shelf') setFocus('top', last.top); }
+  else if (a === 'home') setFocus('shelf', last.shelf);
+  else if (a === 'play') launch(ITEMS[sel]);
+  else if (a === 'ok') { if (F.r === 'shelf' || (F.r === 'hero' && F.i === 0)) launch(ITEMS[sel]); else if (F.r === 'hero') toast('Game options \u2014 coming soon');
+    else if (F.i === 2) openPanel(); else if (F.i === 1) toast('Media \u2014 coming soon'); else if (F.i > 2) toast(['Search', 'Settings', 'User profiles'][F.i - 3] + ' \u2014 coming soon'); }
+}
+const launch = g => g.play ? startGame() : toast(g.title + ' \u2014 coming soon');
+const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Enter: 'ok', Escape: 'back', Backspace: 'back', GoBack: 'back', BrowserBack: 'back', Home: 'home', MediaPlayPause: 'play', MediaPlay: 'play', ' ': 'ok' };
+const KC = { 4: 'back', 461: 'back', 10009: 'back', 415: 'play', 19: 'play', 179: 'play' };
+addEventListener('keydown', e => { const a = KEYS[e.key] || KC[e.keyCode]; const w = { w: 'up', s: 'down', a: 'left', d: 'right' }[e.key]; if (w) kbSet(w, 1);
+  if (a) { if (a !== 'ok' || !e.repeat) { e.preventDefault(); kbSet(a, 1); nav(a); } else e.preventDefault(); } });
+addEventListener('keyup', e => { const w = { w: 'up', s: 'down', a: 'left', d: 'right' }[e.key] || KEYS[e.key]; if (w) kbSet(w, 0); });
+addEventListener('click', () => booting && skipBoot());
+// ---------- pads (phones over WebSocket + local gamepads) ----------
+const pads = {}, pad = s => pads[s] || (pads[s] = { b: {}, l: [0, 0], r: [0, 0] });
+const MAP = { up: 'up', down: 'down', left: 'left', right: 'right', cross: 'ok', circle: 'back', home: 'home', options: 'play' };
+function setBtn(s, k, d) { const p = pad(s), was = p.b[k]; p.b[k] = d; if (d && !was && MAP[k]) nav(MAP[k]); }
+const kbSet = (k, d) => { pad('kb').b[k] = d; };
+let ws, sid = localStorage.pbSid, info = { pads: [] }, retry = 0, nconn = 0;
+function connect() {
+  ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+  ws.onopen = () => { retry = 0; ws.send(JSON.stringify({ t: 'tv', sid })); };
+  ws.onclose = () => setTimeout(connect, Math.min(5000, 1000 * ++retry));
+  ws.onmessage = e => { const m = JSON.parse(e.data);
+    if (m.t === 'session') { info = m; sid = m.sid; localStorage.pbSid = sid; $('#qr').innerHTML = m.qr; $('#url').textContent = m.url.replace(/^https?:\/\//, ''); $('#code').textContent = m.code.slice(0, 3) + ' ' + m.code.slice(3); badge(); slots(); }
+    else if (m.t === 'pad') { const p = info.pads[m.slot - 1] = { name: m.name || (info.pads[m.slot - 1] || {}).name || 'Phone', on: m.on };
+      if (m.on) { pad(m.slot); toast(`Controller ${m.slot} connected \u00b7 ${p.name}`); } else { delete pads[m.slot]; toast(`Controller ${m.slot} disconnected`); } badge(); slots(); }
+    else if (m.t === 'b') setBtn(m.s, m.k, m.d); else if (m.t === 's') pad(m.s)[m.k] = [m.x, m.y]; };
+}
+function badge() { nconn = info.pads.filter(p => p && p.on).length; const b = $('#badge'); b.textContent = nconn; b.style.display = nconn ? 'block' : 'none'; }
+function slots() { $('#slots').innerHTML = [0, 1, 2, 3].map(i => { const p = info.pads[i]; return `<li class="${p && p.on ? 'on' : ''}">Player ${i + 1} \u2014 ${p ? (p.on ? p.name + ' \u00b7 connected' : p.name + ' \u00b7 reconnecting\u2026') : 'waiting\u2026'}</li>`; }).join(''); }
+const rumble = (slot, ms) => ws && ws.readyState === 1 && ws.send(JSON.stringify({ t: 'rumble', slot, ms }));
+const rumbleAll = () => info.pads.forEach((p, i) => p && p.on && rumble(i + 1, 250));
+const openPanel = () => { panelOn = true; $('#panel').classList.add('on'); setFocus('panel', 1); }, closePanel = () => { panelOn = false; $('#panel').classList.remove('on'); setFocus('top', 2); };
+function pollGamepads() { for (const g of (navigator.getGamepads ? navigator.getGamepads() : [])) { if (!g) continue; const s = 'gp' + g.index, p = pad(s), B = i => g.buttons[i] && g.buttons[i].pressed ? 1 : 0;
+  [['cross', 0], ['circle', 1], ['square', 2], ['triangle', 3], ['l1', 4], ['r1', 5], ['options', 9], ['up', 12], ['down', 13], ['left', 14], ['right', 15], ['home', 16]].forEach(([k, i]) => setBtn(s, k, B(i)));
+  p.l = [g.axes[0] || 0, g.axes[1] || 0]; p.r = [g.axes[2] || 0, g.axes[3] || 0]; } }
+// ---------- built-in demo game: Orb Rush (proves end-to-end controller input) ----------
+const cv = $('#game'), cx = cv.getContext('2d'), G = { on: false, t: 0, over: false, paused: false, pl: {}, orbs: [], best: +localStorage.pbBest || 0 }, COL = ['#5aa9ff', '#ff6b8b', '#ffd35a', '#6bffb0', '#c58bff'];
+function startGame() { Object.assign(G, { on: true, t: 45, over: false, paused: false, pl: {}, orbs: [] }); cv.style.display = 'block'; }
+function gameNav(a) { if (a === 'back' || a === 'home') { G.on = false; cv.style.display = 'none'; } else if (a === 'ok' && G.over) startGame(); else if (a === 'play') G.paused = !G.paused; }
+function gameTick(dt) {
+  const keys = Object.keys(pads); for (const k of keys) if (!G.pl[k]) G.pl[k] = { x: 200 + Math.random() * 880, y: 200 + Math.random() * 320, s: 0, c: COL[Object.keys(G.pl).length % 5], last: 0 };
+  for (const k of Object.keys(G.pl)) if (!pads[k]) delete G.pl[k];
+  if (!G.paused && !G.over) { G.t -= dt; if (G.t <= 0) { G.t = 0; G.over = true; const top = Math.max(0, ...Object.values(G.pl).map(p => p.s)); if (top > G.best) { G.best = top; localStorage.pbBest = top; } }
+    while (G.orbs.length < 4 + keys.length) G.orbs.push({ x: 60 + Math.random() * 1160, y: 90 + Math.random() * 570 });
+    for (const [k, p] of Object.entries(G.pl)) { const d = pads[k], b = d.b; let vx = d.l[0] + (b.right ? 1 : 0) - (b.left ? 1 : 0), vy = d.l[1] + (b.down ? 1 : 0) - (b.up ? 1 : 0); const m = Math.hypot(vx, vy); if (m > 1) { vx /= m; vy /= m; } if (m < 0.08) { vx = vy = 0; }
+      p.x = clamp(p.x + vx * 430 * dt, 20, 1260); p.y = clamp(p.y + vy * 430 * dt, 20, 700);
+      G.orbs = G.orbs.filter(o => { if (Math.hypot(o.x - p.x, o.y - p.y) < 34) { p.s++; if (!isNaN(+k) && performance.now() - p.last > 60) { rumble(+k, 30); p.last = performance.now(); } return false; } return true; }); } }
+  cx.fillStyle = '#05060d'; cx.fillRect(0, 0, 1280, 720);
+  for (const o of G.orbs) { const g = cx.createRadialGradient(o.x, o.y, 2, o.x, o.y, 26); g.addColorStop(0, '#fff'); g.addColorStop(.3, '#7be0ff'); g.addColorStop(1, 'rgba(60,140,255,0)'); cx.fillStyle = g; cx.beginPath(); cx.arc(o.x, o.y, 26, 0, 7); cx.fill(); }
+  let n = 0; for (const [k, p] of Object.entries(G.pl)) { cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, 18, 0, 7); cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 2; cx.stroke();
+    cx.fillStyle = '#fff'; cx.font = '600 18px sans-serif'; cx.textAlign = 'left'; cx.fillText((isNaN(+k) ? (k === 'kb' ? 'Keyboard' : 'Gamepad') : 'Phone ' + k) + ': ' + p.s, 24 + n++ * 220, 36); }
+  cx.textAlign = 'right'; cx.fillText('Time ' + Math.ceil(G.t) + '   Best ' + G.best, 1256, 36); cx.textAlign = 'center'; cx.font = '700 44px sans-serif';
+  if (G.over) { cx.fillText('Time! Press \u2715 / Enter to replay, \u25cb / Back to exit', 640, 360); } else if (G.paused) cx.fillText('Paused', 640, 360);
+  else if (!keys.length || (keys.length === 1 && keys[0] === 'kb' && G.t > 43)) { cx.font = '500 22px sans-serif'; cx.fillStyle = 'rgba(255,255,255,.6)'; cx.fillText('Move with arrow keys, a gamepad or a paired phone \u00b7 Back to exit', 640, 690); } }
+// ---------- boot sequence (timings estimated from 2 s samples of the reference video) ----------
+const bk = $('#bk').getContext('2d'), P = Array.from({ length: 130 }, () => ({ x: Math.random() * 1280, y: Math.random() * 720, r: .6 + Math.random() * 2.2, vx: (Math.random() - .5) * 8, vy: -2 - Math.random() * 6, c: Math.random() < .6 ? '255,196,110' : '120,190,230' }));
+const BL = [[300, 200, 70], [380, 330, 55], [560, 120, 40], [780, 480, 60], [940, 260, 45], [1010, 560, 38]]; let bkOn = false, timers = [];
+function bokeh(dt) { bk.globalCompositeOperation = 'source-over'; bk.fillStyle = '#030a12'; bk.fillRect(0, 0, 1280, 720); bk.globalCompositeOperation = 'lighter';
+  for (const [x, y, r] of BL) { const g = bk.createRadialGradient(x, y, r * .2, x, y, r); g.addColorStop(0, 'rgba(40,110,130,.22)'); g.addColorStop(1, 'rgba(20,80,100,.03)'); bk.fillStyle = g; bk.beginPath(); bk.arc(x, y, r, 0, 7); bk.fill(); }
+  for (const p of P) { p.x += p.vx * dt; p.y += p.vy * dt; if (p.y < -5) p.y = 725; bk.fillStyle = `rgba(${p.c},.75)`; bk.beginPath(); bk.arc(p.x, p.y, p.r, 0, 7); bk.fill(); } }
+function boot() { if (!T) return finishBoot(); const on = (id, v) => $(id).classList.toggle('on', v); let t = 0; const at = (s, f) => timers.push(setTimeout(f, (t += s) * 1000 * T));
+  on('#logo', true); at(6.6, () => { on('#logo', false); on('#warn', true); }); at(4.2, () => { on('#warn', false); on('#bk', true); bkOn = true; }); at(3, () => { on('#spot', true); on('#bk', false); }); at(2.4, finishBoot); }
+function skipBoot() { timers.forEach(clearTimeout); finishBoot(); }
+function finishBoot() { if (!booting) return; booting = false; bkOn = false; $('#boot').classList.add('off'); $('#home').classList.add('on'); setTimeout(() => toast('Logged in to your PLAYBOX.', 5500), 500); }
+// ---------- main loop ----------
+let lt = performance.now(); (function tick(n) { const dt = Math.min(.05, (n - lt) / 1000); lt = n; pollGamepads(); if (bkOn) bokeh(dt); if (G.on) gameTick(dt); requestAnimationFrame(tick); })(lt);
+const fit = () => { const k = Math.min(innerWidth / 1280, innerHeight / 720); $('#stage').style.transform = `translate(${(innerWidth - 1280 * k) / 2}px,${(innerHeight - 720 * k) / 2}px) scale(${k})`; }; addEventListener('resize', fit); fit();
+setFocus('shelf', 1); slots(); connect(); boot();
+window.__pb = { state: () => ({ r: F.r, i: F.i, sel, panel: panelOn, game: G.on, booting, pads: Object.keys(pads), players: G.pl, score: Object.values(G.pl).map(p => p.s) }), nav };
+})();
+</script></body></html>
